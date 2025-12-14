@@ -93,10 +93,11 @@ function Routine() {
     const addSet = (exerciseIndex, workoutIndex) => {
         setRoutine(prev => {
             const updated = structuredClone(prev);
-
-            updated.workouts[workoutIndex]
+            const ex = updated.workouts[workoutIndex]
                 .exercises[exerciseIndex]
-                .sets.push({ weight: 0, reps: 0, status: "pending" });
+            const weight = ex.sets.length > 0 ? ex.sets[ex.sets.length -1].weight : 0;
+            const reps = ex.sets.length > 0 ? ex.sets[ex.sets.length -1].reps : 0;
+            ex.sets.push({ weight: weight, reps: reps, status: "pending" });
 
             return updated;
         });
