@@ -10,6 +10,7 @@ const path = require("path");
 const userApi = require("./user");
 const exerciseApi = require("./exercise");
 const routineApi = require("./routine");
+const workoutTrackApi = require("./workout_tracks");
 
 app.set('trust proxy', 1);
 // app.use(cors({
@@ -30,18 +31,36 @@ const MONGO_URI = process.env.MONGO_URI;
 
 app.use('/uploads', express.static('uploads'));
 
-// React build
-app.use(express.static(
-  path.join(__dirname, "../../frontend/build")
-));
+
 
 app.use("/api/users", userApi);
 app.use("/api/exercises", exerciseApi);
 app.use("/api/routines", routineApi);
+app.use("/api/workout_tracks", workoutTrackApi);
 
-app.get('/*path', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
-});
+
+if (process.env.NODE_ENV === "production") {
+  // Serve React build in production
+  // React build
+
+  app.use(express.static(path.join(__dirname, "../../frontend/build")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../../frontend/build", "index.html"));
+  });
+} else {
+  // In development, proxy requests to running React dev server
+  // For example, frontend is on port 3000
+  const { createProxyMiddleware } = require('http-proxy-middleware');
+  app.use(
+    '/',
+    createProxyMiddleware({
+      target: "http://localhost:3000",
+      changeOrigin: true,
+    })
+  );
+}
+
 
 mongoose.connect(MONGO_URI)
   .then(() => {

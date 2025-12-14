@@ -32,8 +32,8 @@ const Routine = mongoose.model('Routine', routineSchema, 'routines');
 router.post('/add', async (req, res) => {
     try {
         console.log("Request body:", req.body);
-        const { routineName, workouts } = req.body;
-        const newRoutine = new Routine({ routineName, workouts });
+        const { userId, routineName, workouts , isDefault } = req.body;
+        const newRoutine = new Routine({ userId, routineName, workouts, isDefault });
         const savedRoutine = await newRoutine.save();
         res.status(201).json({ message: 'Routine added successfully' , routine: savedRoutine});
     } catch (error) {

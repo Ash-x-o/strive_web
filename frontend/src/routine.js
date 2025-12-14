@@ -320,11 +320,11 @@ function Routine() {
     }, [user]);
 
     const saveWorkout = async () => {
-        if(!routine) return;
+        if(!routine || routine._id === "") return;
         const confirmed = window.confirm("Are you sure you want to save this workout?");
         if (!confirmed) return;
         try{
-            const response = await fetch(`/api/workoutTracks/add`, {
+            const response = await fetch(`/api/workout_tracks/add`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -355,6 +355,15 @@ function Routine() {
         if(!routine) return;
         if(routine._id === ""){
             try{
+                const routineClone = structuredClone(routine);
+                routineClone.workouts.forEach(workout => {
+                    workout.exercises.forEach(exercise => {
+                        exercise.sets.forEach(set => {
+                            set.status = "pending"; // set all sets to pending
+                        });
+                        exercise.status = "pending"; // also set exercise status to pending
+                    });
+                });
                 const response = await fetch(`/api/routines/add`, {
                     method: "POST",
                     headers: {
@@ -362,9 +371,9 @@ function Routine() {
                     },
                     body: JSON.stringify({
                         userId: user._id,
-                        routineName : routine.routineName,
-                        workouts : routine.workouts,
-                        isDefault: true
+                        routineName : routineClone.routineName,
+                        workouts : routineClone.workouts,
+                        isDefault: false
                     }),
                     credentials: "include",
                 });
@@ -388,7 +397,7 @@ function Routine() {
                     body: JSON.stringify({
                         routineName : routine.routineName,
                         workouts : routine.workouts,
-                        isDefault: true
+                        isDefault: routine.isDefault
                     }),
                     credentials: "include",
                     
@@ -460,6 +469,50 @@ function Routine() {
         });
     };
 
+    const [workoutTracks, setWorkoutTracks] = useState([]);
+
+    useEffect(() => {
+        if(!user) return;
+        const fetchWorkoutTracks = async () => {
+            try {
+                const response = await fetch(`/api/workout_tracks/get-all-by-user/${user._id}`, {
+                    method: "GET",
+                    credentials: "include",
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    console.log("Workout tracks fetched successfully, ");
+                    setWorkoutTracks(data.workoutTracks);
+                }
+            } catch (error) {
+                console.error("Error fetching workout tracks:", error);
+            }
+        };
+        fetchWorkoutTracks();
+
+
+    }, [user]);
+
+
+    const didCompleted = (date) => {
+        if(!workoutTracks) return false;
+        const track = workoutTracks.find(track => {
+            const trackDate = new Date(track.date);
+            return trackDate.getDate() === date && trackDate.getMonth() === new Date().getMonth() && trackDate.getFullYear() === new Date().getFullYear();
+        });
+        if(track){
+            return track.status === "completed";
+        } else {
+            return false;
+        }
+    };
+
+        
+            
+        
+
+
+
     return (
         <div className="relative bg-bg-dark font-display text-white h-screen p-4 flex flex-col">
             <h1 className="text-center mb-5 text-xl">Daily Workout</h1>
@@ -470,7 +523,7 @@ function Routine() {
                            
                             className="text-xs flex flex-col justify-center items-center "
                             key={i}>
-                                <span  onClick={() => {setCurrentWorkout(i)}} className={`border border-primary flex justify-center items-center ${currentWorkout === i ? "bg-primary text-black" : "bg-card-dark text-white"} rounded-full w-8 h-8 mb-1`}>{d.date}</span>
+                                <span  onClick={() => {setCurrentWorkout(i)}} className={`${didCompleted(new Date(d.date)) ? "border border-primary " : ""}flex justify-center items-center ${currentWorkout === i ? "bg-primary text-black" : "bg-card-dark text-white"} rounded-full w-8 h-8 mb-1`}>{d.date}</span>
                                 <span className={`${d.date === new Date().getDate() ? "underline underline-offset-4 underline-primary text-primary" : ""}`}>{d.day}</span>
                         </li>
                     ))}
@@ -494,7 +547,7 @@ function Routine() {
                             className="text mb-3 bg-transparent outline-none border-none p-0 focus:ring-0 focus:outline-0 focus:p-0"
                         />
                     }
-                        <button onClick={handleSave} className="mb-3 w-1/3 bg-primary text-sm text-black rounded-md px-3 py-1">Save Workout</button>
+                        <button onClick={handleSave} className="mb-3 bg-primary text-sm text-black rounded-md p-1"><span className="material-symbols-outlined">save</span></button>
                     
                     </div>
 
