@@ -40,7 +40,7 @@ app.use("/api/exercises", exerciseApi);
 app.use("/api/routines", routineApi);
 
 app.get('/*path', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
 });
 
 mongoose.connect(MONGO_URI)
