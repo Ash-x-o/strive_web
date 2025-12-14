@@ -566,8 +566,25 @@ function Routine() {
         setWorkoutMoreOps(false); 
     }
         
-            
-        
+    const [draggedExIndex, setDraggedExIndex] = useState(null);
+
+    const handleDropExercise = (workoutIndex, targetExIndex) => {
+    if (draggedExIndex === null || draggedExIndex === targetExIndex) return;
+
+    setRoutine(prev => {
+        const updated = structuredClone(prev);
+
+        const exercises = updated.workouts[workoutIndex].exercises;
+
+        const [moved] = exercises.splice(draggedExIndex, 1);
+        exercises.splice(targetExIndex, 0, moved);
+
+        return updated;
+    });
+
+    setDraggedExIndex(null);
+    };
+
 
 
 
@@ -631,7 +648,11 @@ function Routine() {
                             
                         <li 
                             key={exIndex}
-                            className=" flex flex-col items-center mb-2 rounded-lg">
+                            draggable
+                            onDragStart={() => setDraggedExIndex(exIndex)}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={() => handleDropExercise(index, exIndex)}
+                            className={`flex flex-col items-center mb-2 rounded-lg${draggedExIndex === exIndex ? "opacity-50" : ""}`}>
                             <div className="flex flex-col z-0 top-0 left-0 w-full bg-gray-700 rounded-lg">
                                 <div
                                     onClick={() => {
@@ -684,6 +705,14 @@ function Routine() {
                                         }
                                     </div>
                                     }
+                                    <span
+                                        onClick={(e) => e.stopPropagation()}
+                                        draggable
+                                        onDragStart={(e) => {
+                                            e.stopPropagation();
+                                            setDraggedExIndex(exIndex);
+                                        }}
+                                        className="material-symbols-outlined cursor-grab active:cursor-grabbing mr-2">drag_indicator</span>
                                     <img src={getExcerciseImg(exercise.exId)} alt="Barbell Bench Press" className="w-16 h-16 rounded-lg mr-2 object-cover"/>
                                     <div className="h-full flex flex-col justify-center ">   
                                         <h3 className="text-sm">{getExerciseName(exercise.exId)}</h3>
