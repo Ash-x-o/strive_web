@@ -39,7 +39,7 @@ app.use("/api/users", userApi);
 app.use("/api/exercises", exerciseApi);
 app.use("/api/routines", routineApi);
 
-app.get('*', (req, res) => {
+app.get('/*path', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
 });
 
