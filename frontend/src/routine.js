@@ -43,9 +43,14 @@ function Routine() {
                 });
                 const data = await response.json();
                 if (response.ok) {
-                    setUser(data.user);
+                    
                     console.log("Session check successful:", data.loggedIn);
-
+                    if(!data.loggedIn){
+                        navigate('/login');
+                        setUser(null);
+                    }else{
+                        setUser(data.user);
+                    }
                 } else {
                     navigate('/login');
                     setUser(null);
