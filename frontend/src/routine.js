@@ -2,7 +2,19 @@ import { use, useEffect, useState, useRef } from "react";
 import flatBenchPress from './images/flat_bench_press.png'
 import { useNavigate } from "react-router-dom";
 import AddExercise from "./add_exercise";
+import {
+  DndContext,
+  closestCenter
+} from "@dnd-kit/core";
 
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy
+} from "@dnd-kit/sortable";
+
+import { CSS } from "@dnd-kit/utilities";
+import { arrayMove } from "@dnd-kit/sortable";
 
 
 function Routine() {
@@ -566,23 +578,24 @@ function Routine() {
         setWorkoutMoreOps(false); 
     }
         
-    const [draggedExIndex, setDraggedExIndex] = useState(null);
 
-    const handleDropExercise = (workoutIndex, targetExIndex) => {
-    if (draggedExIndex === null || draggedExIndex === targetExIndex) return;
+    const handleExerciseDragEnd = (event, workoutIndex) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
     setRoutine(prev => {
         const updated = structuredClone(prev);
 
         const exercises = updated.workouts[workoutIndex].exercises;
 
-        const [moved] = exercises.splice(draggedExIndex, 1);
-        exercises.splice(targetExIndex, 0, moved);
+        const oldIndex = exercises.findIndex(e => e.exId === active.id);
+        const newIndex = exercises.findIndex(e => e.exId === over.id);
+
+        updated.workouts[workoutIndex].exercises =
+        arrayMove(exercises, oldIndex, newIndex);
 
         return updated;
     });
-
-    setDraggedExIndex(null);
     };
 
 
@@ -644,186 +657,194 @@ function Routine() {
                     <ul     
                         key={index}
                         className="list-none" >
-                        {workout.exercises && workout.exercises.map((exercise, exIndex) => (
-                            
-                        <li 
-                            key={exIndex}
-                            draggable
-                            onDragStart={() => setDraggedExIndex(exIndex)}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={() => handleDropExercise(index, exIndex)}
-                            className={`flex flex-col items-center mb-2 rounded-lg${draggedExIndex === exIndex ? "opacity-50" : ""}`}>
-                            <div className="flex flex-col z-0 top-0 left-0 w-full bg-gray-700 rounded-lg">
-                                <div
-                                    onClick={() => {
-                                            if(!showMore)toggleCurrExercise(exIndex);
-                                    }}
-                                    className="relative shadow-lg bg-card-dark rounded-lg p-3 z-30 flex items-center w-full cursor-pointer">
-                                    <span onClick={(e) => {setShowMoreOverlay(true); setShowMore(exIndex); e.stopPropagation(e);}} className="absolute top-0 right-0 text-md material-symbols-outlined px-2 py-1">more_horiz</span>
-                                    {/* {showMoreOverlay &&
-                                        <div onClick={() => {setShowMoreOverlay(false); setShowMore(null)}} className="fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.1)] z-20 backdrop-blur-[5px]"/>
-                                    } */}
-                                    {showMore === exIndex && showMoreOverlay &&
-                                    <div ref={moreRef} className="absolute top-8 right-0 z-32 bg-card-dark rounded shadow-lg">
-                                        {!isSetRepRange &&
-                                        <ul onClick={(e) => e.stopPropagation(e)} className="text-xs">
-                                            
-                                            <li onClick={(e) =>{setIsSetRepRange(true); }} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer active:bg-gray-600/10"><span className="material-symbols-outlined text-xs">edit</span>Set Rep Range</li>
-                                            <li onClick={() => deleteExercise(index, exIndex)} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer active:bg-gray-600/10"><span className="material-symbols-outlined text-xs">delete</span>Delete Exercise</li>
-                                            <li className="flex flex-col">
-                                                <span className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer"><span className="material-symbols-outlined text-xs">fitness_center</span>Weight Unit</span>
-                                                <div className="flex flex-col justify-center px-4 pb-2">
-                                                    <div className="flex gap-4 items-center">
-                                                        
-                                                        <input type="radio" className="text-primary text-sm bg-accent focus-ring-0 ring-0 focus:text-primary focus:bg-primary found:outline-none outline-none border-none focus:border-none" name={`weightUnit-${index}-${exIndex}`} value="kg" checked={exercise.weightUnit === "kg"} onChange={() => {changeWeightUnit(index, exIndex, "kg")}} />
-                                                        <label className="mb-1">kg</label>
-                                                    </div>
-                                                    <div className="flex gap-4 items-center">
-                                                        <input type="radio" className="text-primary text-sm bg-accent focus-ring-0 ring-0 focus:text-primary focus:bg-primary found:outline-none outline-none border-none focus:border-none" name={`weightUnit-${index}-${exIndex}`} value="lbs" checked={exercise.weightUnit === "lbs"} onChange={() => {changeWeightUnit(index, exIndex, "lbs")}} />
-                                                        <label  className="mb-1">lbs</label>
+                            <DndContext
+                            collisionDetection={closestCenter}
+                            onDragEnd={(event) => handleExerciseDragEnd(event, index)}
+                            >
+                            <SortableContext
+                            items={workout.exercises.map(ex => ex.exId)}
+                            strategy={verticalListSortingStrategy}
+                            >
+                            {workout.exercises && workout.exercises.map((exercise, exIndex) => (
+                            <SortableExercise id={exercise.exId}>
+                                {({ setNodeRef, attributes, listeners, style, isDragging }) => (   
+                                <li 
+                                ref={setNodeRef}
+                                style={style}
+                                key={exercise.exId + "-" + exIndex}
+                                
+                                className={`flex flex-col items-center mb-2 rounded-lg`}>
+                                <div className="flex flex-col z-0 top-0 left-0 w-full bg-gray-700 rounded-lg">
+                                    <div
+                                        onClick={() => {
+                                                if(!showMore)toggleCurrExercise(exIndex);
+                                        }}
+                                        className="relative shadow-lg bg-card-dark rounded-lg p-1 py-2 z-30 flex items-center w-full cursor-pointer">
+                                        <span onClick={(e) => {setShowMoreOverlay(true); setShowMore(exIndex); e.stopPropagation(e);}} className="absolute top-0 right-0 text-md material-symbols-outlined px-2 py-1">more_horiz</span>
+                                        {/* {showMoreOverlay &&
+                                            <div onClick={() => {setShowMoreOverlay(false); setShowMore(null)}} className="fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.1)] z-20 backdrop-blur-[5px]"/>
+                                        } */}
+                                        {showMore === exIndex && showMoreOverlay &&
+                                        <div ref={moreRef} className="absolute top-8 right-0 z-32 bg-card-dark rounded shadow-lg">
+                                            {!isSetRepRange &&
+                                            <ul onClick={(e) => e.stopPropagation(e)} className="text-xs">
+                                                
+                                                <li onClick={(e) =>{setIsSetRepRange(true); }} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer active:bg-gray-600/10"><span className="material-symbols-outlined text-xs">edit</span>Set Rep Range</li>
+                                                <li onClick={() => deleteExercise(index, exIndex)} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer active:bg-gray-600/10"><span className="material-symbols-outlined text-xs">delete</span>Delete Exercise</li>
+                                                <li className="flex flex-col">
+                                                    <span className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer"><span className="material-symbols-outlined text-xs">fitness_center</span>Weight Unit</span>
+                                                    <div className="flex flex-col justify-center px-4 pb-2">
+                                                        <div className="flex gap-4 items-center">
+                                                            
+                                                            <input type="radio" className="text-primary text-sm bg-accent focus-ring-0 ring-0 focus:text-primary focus:bg-primary found:outline-none outline-none border-none focus:border-none" name={`weightUnit-${index}-${exIndex}`} value="kg" checked={exercise.weightUnit === "kg"} onChange={() => {changeWeightUnit(index, exIndex, "kg")}} />
+                                                            <label className="mb-1">kg</label>
+                                                        </div>
+                                                        <div className="flex gap-4 items-center">
+                                                            <input type="radio" className="text-primary text-sm bg-accent focus-ring-0 ring-0 focus:text-primary focus:bg-primary found:outline-none outline-none border-none focus:border-none" name={`weightUnit-${index}-${exIndex}`} value="lbs" checked={exercise.weightUnit === "lbs"} onChange={() => {changeWeightUnit(index, exIndex, "lbs")}} />
+                                                            <label  className="mb-1">lbs</label>
 
+                                                        </div>
                                                     </div>
+                                                </li>
+                                            </ul>
+                                            }
+                                            {isSetRepRange &&
+                                            <div onClick={(e) =>{e.stopPropagation(e)}} className="z-50 flex flex-col text-xs p-2">
+                                                <span><span onClick={() => setIsSetRepRange(false)} className="material-symbols-outlined text-sm mr-1">chevron_left</span>Set Rep Range</span>
+                                                <div className="flex justify-center gap-8">
+                                                    <div className="flex flex-col justify-center items-center">
+                                                        <label>Min</label>
+                                                        <input value={exercise.minRep} onChange={(e) => setMinRep(index,exIndex,  e.target.value)} type="number" className="text-xs w-8 bg-gray-500/10 border border-gray-500/10 outline-none focus:outline-none focus:ring-0 focus:border-gray-500/30 rounded-md mt-2 mb-2 p-1 text-sm" />
+                                                    </div>
+                                                
+                                                    <div className="flex flex-col justify-center items-center">
+                                                        <label>Max</label>
+                                                        <input value={exercise.maxRep} onChange={(e) => setMaxRep(index,exIndex,  e.target.value)} type="number" className="text-xs w-8 bg-gray-500/10 border border-gray-500/10 outline-none focus:outline-none focus:ring-0 focus:border-gray-500/30 rounded-md mt-2 mb-2 p-1 text-sm" />
+                                                    </div>  
                                                 </div>
-                                            </li>
-                                        </ul>
-                                        }
-                                        {isSetRepRange &&
-                                        <div onClick={(e) =>{e.stopPropagation(e)}} className="z-50 flex flex-col text-xs p-2">
-                                            <span><span onClick={() => setIsSetRepRange(false)} className="material-symbols-outlined text-sm mr-1">chevron_left</span>Set Rep Range</span>
-                                            <div className="flex justify-center gap-8">
-                                                <div className="flex flex-col justify-center items-center">
-                                                    <label>Min</label>
-                                                    <input value={exercise.minRep} onChange={(e) => setMinRep(index,exIndex,  e.target.value)} type="number" className="text-xs w-8 bg-gray-500/10 border border-gray-500/10 outline-none focus:outline-none focus:ring-0 focus:border-gray-500/30 rounded-md mt-2 mb-2 p-1 text-sm" />
-                                                </div>
-                                            
-                                                <div className="flex flex-col justify-center items-center">
-                                                    <label>Max</label>
-                                                    <input value={exercise.maxRep} onChange={(e) => setMaxRep(index,exIndex,  e.target.value)} type="number" className="text-xs w-8 bg-gray-500/10 border border-gray-500/10 outline-none focus:outline-none focus:ring-0 focus:border-gray-500/30 rounded-md mt-2 mb-2 p-1 text-sm" />
-                                                </div>  
                                             </div>
+                                            }
                                         </div>
                                         }
+                                        <span
+                                            {...attributes}
+                                            {...listeners}
+                                            className="material-symbols-outlined cursor-grab active:cursor-grabbing touch-none mr-2">drag_indicator</span>
+                                        <img src={getExcerciseImg(exercise.exId)} alt="Barbell Bench Press" className="w-16 h-16 rounded-lg mr-2 object-cover"/>
+                                        <div className="h-full flex flex-col justify-center ">   
+                                            <h3 className="text-sm">{getExerciseName(exercise.exId)}</h3>
+                                            <p className="text-xs text-gray-400">{exercise.sets.length} sets x {exercise.minRep}-{exercise.maxRep}  reps</p>
+                                        </div>
+                                        <input
+                                            onChange={() => exCheckChange(exIndex, index)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            checked={exercise.sets.every(set => set.status === "completed")}
+                                            type="checkbox" className="ml-auto mr-4 rounded-full bg-card-dark text-primary ring-0 outline-none focus:outline-0 focus:border-0 focus:ring-0 self-center w-5 h-5 accent-primary"/>
+                                    </div>
+                                    {currentExercise === exIndex && 
+                                    <div 
+                                        
+                                        className={`bg-card-dark ${currentExercise === exIndex? "p-2 h-auto m-4" : "p-0 h-0 m-0"} rounded overflow-hidden shadow-inner shadow-black/30`}>
+                                        <table className="w-full border-collapse">
+                                            <thead>
+                                                <tr className="border-b border-gray-600">
+                                                <th className="text-left text-sm py-2 px-2">Set</th>
+                                                <th className="text-left text-sm py-2 px-2">Weight</th>
+                                                <th className="text-left text-sm py-2 px-2">Reps</th>
+                                                <th className="text-left text-sm py-2 px-2"></th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                {exercise.sets.map((set, setIndex) => (
+                                                <tr key={setIndex} className="border-b border-gray-700">
+                                                <td className="text-sm py-3 px-2">{setIndex}</td>
+                                                {/* Weight */}
+                                                <td
+                                                    className="text-sm py-3 px-2 cursor-pointer"
+                                                    onClick={(e) =>{
+                                                        setEditingCell({ workoutIndex: index, exIndex, setIndex, field: "weight" });
+                                                        const value = parseInt(e.target.value, 10); // CHANGED
+                                                        if(value > 0) return;
+                                                        updateSetField(index, exIndex, setIndex, "weight", null)
+                                                        
+                                                    }} // CHANGED
+                                                >
+                                                    {editingCell?.workoutIndex === index &&        // CHANGED
+                                                    editingCell?.exIndex === exIndex &&
+                                                    editingCell?.setIndex === setIndex &&
+                                                    editingCell?.field === "weight" ? (
+
+                                                        <input
+                                                            type="number"
+                                                            autoFocus
+                                                            value={set.weight}
+                                                            onChange={(e) =>
+                                                                updateSetField(index, exIndex, setIndex, "weight", e.target.value)
+                                                            } // CHANGED
+                                                            onBlur={() => setEditingCell(null)} // CHANGED
+                                                            className="w-16 bg-transparent outline-none border-none p-0 m-0 focus:ring-0 focus:outline-0 focus:p-0 focus:m-0 text-sm"
+                                                        />
+
+                                                    ) : (
+                                                        `${set.weight === null ? "0" : set.weight} ${exercise.weightUnit}`
+                                                    )}
+                                                </td>
+
+                                                {/* Reps */}
+                                                <td
+                                                    className="text-sm py-3 px-2 cursor-pointer"
+                                                    onClick={(e) =>{
+                                                        setEditingCell({ workoutIndex: index, exIndex, setIndex, field: "reps" })
+                                                        const value = parseInt(e.target.value, 10); // CHANGED
+                                                        if(value > 0) return;
+                                                        updateSetField(index, exIndex, setIndex, "reps", null)
+                                                    }} // CHANGED
+                                                >
+                                                    {editingCell?.workoutIndex === index &&        // CHANGED
+                                                    editingCell?.exIndex === exIndex &&
+                                                    editingCell?.setIndex === setIndex &&
+                                                    editingCell?.field === "reps" ? (
+
+                                                        <input
+                                                            type="number"
+                                                            autoFocus
+                                                            value={set.reps}
+                                                            onChange={(e) =>
+                                                                updateSetField(index, exIndex, setIndex, "reps", e.target.value)
+                                                            } // CHANGED
+                                                            onBlur={() => setEditingCell(null)} // CHANGED
+                                                            className="w-16 bg-transparent outline-none border-none p-0 m-0 focus:ring-0 focus:outline-0 focus:p-0 focus:m-0 text-sm"
+                                                        />
+
+                                                    ) : (
+                                                        `${set.reps === null ? "0" : set.reps} reps`
+                                                    )}
+                                                </td>
+                                                <td className="text-sm py-3 px-2 flex justify-between items-center">
+                                                    <input type="checkbox" checked={set.status === "completed"} onChange={() => setCheckChange(setIndex, exIndex, index)} className="rounded-full bg-card-dark text-primary ring-0 outline-none focus:outline-0 focus:border-0 focus:ring-0 self-center w-3 h-3 accent-primary"/>
+                                                    <span onClick={() => removeSet(index, exIndex, setIndex)} className="material-symbols-outlined text-xs cursor-pointer">close</span>
+                                                </td>
+                                                </tr>
+                                                ))}
+                                                
+                                            </tbody>
+                                            </table>
+                                            <button 
+                                                onClick={() => addSet(exIndex, index)}
+                                                className="mt-3 w-full text-xs border border-dashed py-1 rounded-full">Add Set</button>
+
                                     </div>
                                     }
-                                    <span
-                                        onClick={(e) => e.stopPropagation()}
-                                        draggable
-                                        onDragStart={(e) => {
-                                            e.stopPropagation();
-                                            setDraggedExIndex(exIndex);
-                                        }}
-                                        className="material-symbols-outlined cursor-grab active:cursor-grabbing mr-2">drag_indicator</span>
-                                    <img src={getExcerciseImg(exercise.exId)} alt="Barbell Bench Press" className="w-16 h-16 rounded-lg mr-2 object-cover"/>
-                                    <div className="h-full flex flex-col justify-center ">   
-                                        <h3 className="text-sm">{getExerciseName(exercise.exId)}</h3>
-                                        <p className="text-xs text-gray-400">{exercise.sets.length} sets x {exercise.minRep}-{exercise.maxRep}  reps</p>
-                                    </div>
-                                    <input
-                                        onChange={() => exCheckChange(exIndex, index)}
-                                        onClick={(e) => e.stopPropagation()}
-                                        checked={exercise.sets.every(set => set.status === "completed")}
-                                        type="checkbox" className="ml-auto mr-4 rounded-full bg-card-dark text-primary ring-0 outline-none focus:outline-0 focus:border-0 focus:ring-0 self-center w-5 h-5 accent-primary"/>
                                 </div>
-                                {currentExercise === exIndex && 
-                                <div 
-                                    
-                                    className={`bg-card-dark ${currentExercise === exIndex? "p-2 h-auto m-4" : "p-0 h-0 m-0"} rounded overflow-hidden shadow-inner shadow-black/30`}>
-                                    <table className="w-full border-collapse">
-                                        <thead>
-                                            <tr className="border-b border-gray-600">
-                                            <th className="text-left text-sm py-2 px-2">Set</th>
-                                            <th className="text-left text-sm py-2 px-2">Weight</th>
-                                            <th className="text-left text-sm py-2 px-2">Reps</th>
-                                            <th className="text-left text-sm py-2 px-2"></th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            {exercise.sets.map((set, setIndex) => (
-                                            <tr key={setIndex} className="border-b border-gray-700">
-                                            <td className="text-sm py-3 px-2">{setIndex}</td>
-                                            {/* Weight */}
-                                            <td
-                                                className="text-sm py-3 px-2 cursor-pointer"
-                                                onClick={(e) =>{
-                                                    setEditingCell({ workoutIndex: index, exIndex, setIndex, field: "weight" });
-                                                    const value = parseInt(e.target.value, 10); // CHANGED
-                                                    if(value > 0) return;
-                                                    updateSetField(index, exIndex, setIndex, "weight", null)
-                                                    
-                                                }} // CHANGED
-                                            >
-                                                {editingCell?.workoutIndex === index &&        // CHANGED
-                                                editingCell?.exIndex === exIndex &&
-                                                editingCell?.setIndex === setIndex &&
-                                                editingCell?.field === "weight" ? (
-
-                                                    <input
-                                                        type="number"
-                                                        autoFocus
-                                                        value={set.weight}
-                                                        onChange={(e) =>
-                                                            updateSetField(index, exIndex, setIndex, "weight", e.target.value)
-                                                        } // CHANGED
-                                                        onBlur={() => setEditingCell(null)} // CHANGED
-                                                        className="w-16 bg-transparent outline-none border-none p-0 m-0 focus:ring-0 focus:outline-0 focus:p-0 focus:m-0 text-sm"
-                                                    />
-
-                                                ) : (
-                                                    `${set.weight === null ? "0" : set.weight} ${exercise.weightUnit}`
-                                                )}
-                                            </td>
-
-                                            {/* Reps */}
-                                            <td
-                                                className="text-sm py-3 px-2 cursor-pointer"
-                                                onClick={(e) =>{
-                                                    setEditingCell({ workoutIndex: index, exIndex, setIndex, field: "reps" })
-                                                    const value = parseInt(e.target.value, 10); // CHANGED
-                                                    if(value > 0) return;
-                                                    updateSetField(index, exIndex, setIndex, "reps", null)
-                                                }} // CHANGED
-                                            >
-                                                {editingCell?.workoutIndex === index &&        // CHANGED
-                                                editingCell?.exIndex === exIndex &&
-                                                editingCell?.setIndex === setIndex &&
-                                                editingCell?.field === "reps" ? (
-
-                                                    <input
-                                                        type="number"
-                                                        autoFocus
-                                                        value={set.reps}
-                                                        onChange={(e) =>
-                                                            updateSetField(index, exIndex, setIndex, "reps", e.target.value)
-                                                        } // CHANGED
-                                                        onBlur={() => setEditingCell(null)} // CHANGED
-                                                        className="w-16 bg-transparent outline-none border-none p-0 m-0 focus:ring-0 focus:outline-0 focus:p-0 focus:m-0 text-sm"
-                                                    />
-
-                                                ) : (
-                                                    `${set.reps === null ? "0" : set.reps} reps`
-                                                )}
-                                            </td>
-                                            <td className="text-sm py-3 px-2 flex justify-between items-center">
-                                                <input type="checkbox" checked={set.status === "completed"} onChange={() => setCheckChange(setIndex, exIndex, index)} className="rounded-full bg-card-dark text-primary ring-0 outline-none focus:outline-0 focus:border-0 focus:ring-0 self-center w-3 h-3 accent-primary"/>
-                                                <span onClick={() => removeSet(index, exIndex, setIndex)} className="material-symbols-outlined text-xs cursor-pointer">close</span>
-                                            </td>
-                                            </tr>
-                                            ))}
-                                            
-                                        </tbody>
-                                        </table>
-                                        <button 
-                                            onClick={() => addSet(exIndex, index)}
-                                            className="mt-3 w-full text-xs border border-dashed py-1 rounded-full">Add Set</button>
-
-                                </div>
-                                }
-                            </div>
-                            </li>
-                        ))}
-                                                
+                                </li>
+                                )}
+                            </SortableExercise>
+                            ))}
+                           </SortableContext> 
+                        </DndContext>                      
                     </ul>
+                    
                     ))}
                     <button
                         onClick={() => handleAddWorkout()}
@@ -877,3 +898,30 @@ function Routine() {
 }
 
 export default Routine;
+
+
+function SortableExercise({ id, children }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 50 : "auto"
+  };
+
+  return children({
+    setNodeRef,
+    attributes,
+    listeners,
+    style,
+    isDragging
+  });
+}
