@@ -53,7 +53,7 @@ router.post('/register', async (req, res) => {
         res.cookie("authToken", token, {
             httpOnly: true,       // JS can't read it → safer
             secure: process.env.NODE_ENV === "production",        // true ONLY if HTTPS
-            sameSite: "none",
+            sameSite: "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path: "/"
               
@@ -86,7 +86,7 @@ router.post('/login', async (req, res) => {
         res.cookie("authToken", token, {
             httpOnly: true,       // JS can't read it → safer
             secure: process.env.NODE_ENV === "production",        // true ONLY if HTTPS
-            sameSite: "none",
+            sameSite: "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,  // one week
             path: "/"
         });
@@ -104,7 +104,7 @@ router.post("/logout", (req, res) => {
     res.clearCookie("authToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // true ONLY if HTTPS
-      sameSite: "none",
+      sameSite: "lax",
       path: "/", // make sure it matches the cookie path
     });
 
