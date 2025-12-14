@@ -9,6 +9,7 @@ import GetStarted from './get_started.js';
 import AddExercise from './add_exercise.js';
 import Login from './login.js';
 import Signup from './signup.js';
+import ProgressStats from './progress_stats.js';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -20,6 +21,7 @@ root.render(
             <Route path="/add_exercise" element={<AddExercise />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/progress_stats" element={<ProgressStats />} />
         </Routes>
     </BrowserRouter>
 

@@ -1,7 +1,8 @@
 import { use, useEffect, useState, useRef } from "react";
 import flatBenchPress from './images/flat_bench_press.png'
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation  } from "react-router-dom";
 import AddExercise from "./add_exercise";
+import {Link} from "react-router-dom";
 import {
   DndContext,
   closestCenter
@@ -881,7 +882,7 @@ function Routine() {
                 </div>
             </div>
             {showOverlay && (
-            <div  onClick={() =>{setShowOverlay(false); setAddExerciseDialog(false);} }   className="fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.1)] z-20 backdrop-blur-[5px]"/>
+            <div  onClick={() =>{setShowOverlay(false); setAddExerciseDialog(false); setReplacingExercise(null);} }   className="fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.1)] z-20 backdrop-blur-[5px]"/>
             )}
             {showAddExerciseDialog && (
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-4/5 w-4/5  z-30 p-4 bg-card-dark rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 shadow-lg shadow-black/50">
@@ -916,6 +917,9 @@ function Routine() {
                     
             </div>
             )}
+        <div className="fixed bottom-0 left-0 w-full flex justify-between items-center">
+            <NavBar />
+        </div>
         </div>
     );
     
@@ -948,4 +952,34 @@ function SortableExercise({ id, children }) {
     style,
     isDragging
   });
+}
+
+export function NavBar () {
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    const currentPath = location.pathname;
+
+    const checkActive = (path) => {
+        return currentPath === path
+    }
+
+    return (
+        <div className="w-full backdrop-blur-[5px]  bg-card-dark/20 border-x border-x-gray-500/20 border-t border-t-gray-500/20 flex justify-between items-center px-4 py-2 rounded-t-lg">
+            <ul className="flex justify-center gap-20 items-center w-full">
+                <li className="flex flex-col justify-center items-center" onClick={() => navigate('/routine')}>
+                    <span className={`text material-symbols-outlined mb-1 ${checkActive('/routine') ? 'text-primary' : 'text-white'}`}>fitness_center</span>
+                    <span className={`text-[10px] ${checkActive('/routine') ? 'text-primary' : 'text-white'}`}>Routine</span>
+                </li>
+                <li className="flex flex-col justify-center items-center" onClick={() => navigate('/home')}>
+                    <span className={`text material-symbols-outlined mb-1 ${checkActive('/home') ? 'text-primary' : 'text-white'}`}>home</span>
+                    <span className={`text-[10px] ${checkActive('/home') ? 'text-primary' : 'text-white'}`}>Home</span>                    
+                </li>
+                <li className="flex flex-col justify-center items-center" onClick={() => navigate('/progress_stats')}>
+                    <span className={`text material-symbols-outlined mb-1 ${checkActive('/progress_stats') ? 'text-primary' : 'text-white'}`}>trending_up</span>
+                    <span className={`text-[10px] ${checkActive('/progress_stats') ? 'text-primary' : 'text-white'}`}>Progress</span>
+                </li>
+            </ul>
+        </div>
+    );
 }

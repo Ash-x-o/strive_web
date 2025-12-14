@@ -11,6 +11,7 @@ const userApi = require("./user");
 const exerciseApi = require("./exercise");
 const routineApi = require("./routine");
 const workoutTrackApi = require("./workout_tracks");
+const weightTrackApi = require("./weight_track");
 
 app.set('trust proxy', 1);
 // app.use(cors({
@@ -37,6 +38,7 @@ app.use("/api/users", userApi);
 app.use("/api/exercises", exerciseApi);
 app.use("/api/routines", routineApi);
 app.use("/api/workout_tracks", workoutTrackApi);
+app.use("/api/weight_tracks", weightTrackApi);
 
 
 if (process.env.NODE_ENV === "production") {
