@@ -382,6 +382,7 @@ function Routine() {
                 if(response.ok) {
                     setRoutine(data.routine)
                     console.log("Routine added successfully");
+                    setWorkoutMoreOps(false); 
                 } else {
                     console.log("Failed to add routine");
                 }
@@ -408,6 +409,7 @@ function Routine() {
                 if(response.ok) {
                     setRoutine(data.routine)
                     console.log("Routine updated successfully");
+                    setWorkoutMoreOps(false); 
                 } else {
                     console.log("Failed to update routine");
                 }
@@ -516,6 +518,53 @@ function Routine() {
         }
     };
 
+    const [copiedWorkout, setCopiedWorkout] = useState(null);
+
+    
+    const handleCopy = () => {
+        if(!routine || routine.workouts.length === 0) return;
+        setCopiedWorkout(routine.workouts[currentWorkout])
+        setWorkoutMoreOps(false); 
+    };
+
+    const pasteWorkout = () => {
+        if(!copiedWorkout) return;
+        setRoutine(prev => {
+            const updated = structuredClone(prev);
+            updated.workouts[currentWorkout] = structuredClone(copiedWorkout);
+            return updated;
+        });
+        setWorkoutMoreOps(false); 
+    }
+
+    const [workoutMoreOps, setWorkoutMoreOps] = useState(false);
+
+    const workoutMoreRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (workoutMoreRef.current && !workoutMoreRef.current.contains(event.target)) {
+                setWorkoutMoreOps(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+    }, [workoutMoreRef]);
+
+
+    const handleDeleteWorkout = () => {
+        const confirmed = window.confirm("Are you sure you want to delete this workout?");
+        if (!confirmed) return;
+        setRoutine(prev => {
+            const updated = structuredClone(prev);
+            updated.workouts.splice(currentWorkout, 1);
+            return updated;
+        });
+        setCurrentWorkout(0);
+        setWorkoutMoreOps(false); 
+    }
         
             
         
@@ -545,7 +594,7 @@ function Routine() {
                             placeholder="Set Routine Name"
                             className="text-lg mb-3 bg-transparent outline-none border-none p-0 focus:ring-0 focus:outline-0 focus:p-0"
                         />
-                    <div className="flex justify-between">
+                    <div className="relative flex justify-between">
                     {routine && routine.workouts && currentWorkout !== null && 
                     
                         <input
@@ -556,7 +605,18 @@ function Routine() {
                             className="text mb-3 bg-transparent outline-none border-none p-0 focus:ring-0 focus:outline-0 focus:p-0"
                         />
                     }
-                        <button onClick={handleSave} className="mb-3 bg-primary text-sm text-black rounded-md p-1"><span className="material-symbols-outlined">save</span></button>
+                    <span onClick={() => setWorkoutMoreOps(!workoutMoreOps)} className="material-symbols-outlined mb-3 text  rounded-md p-1">more_vert</span>
+                    {workoutMoreOps &&
+                    <div ref={workoutMoreRef} className="absolute top-full right-0 bg-card-dark rounded-md z-50 shadow-lg">
+                        <ul className="text-xs">
+                            <li onClick={() => {handleSave()}} className="px-4 py-2 flex justify-start items-center active:bg-gray-600/10"><span className="text-xs material-symbols-outlined mr-2">save</span>Save Workout</li>
+                            <li onClick={() => {handleCopy()}} className="px-4 py-2 flex justify-start items-center active:bg-gray-600/10"><span className="text-xs material-symbols-outlined mr-2">content_copy</span>Copy Workout</li>
+                            <li onClick={() => {pasteWorkout()}} className={`px-4 py-2 flex justify-start items-center ${!copiedWorkout ? "text-gray-500 cursor-not-allowed" : "cursor-pointer"} active:bg-gray-600/10`}><span className="text-xs material-symbols-outlined mr-2">content_paste</span>Paste Workout</li>
+                            <li onClick={() => {handleDeleteWorkout()}} className="px-4 py-2 flex justify-start items-center active:bg-gray-600/10"><span className="text-xs material-symbols-outlined mr-2">delete</span>Delete Workout</li>
+                        </ul>
+                    </div>
+                    }
+                        {/* <button onClick={handleSave} className="mb-3 bg-primary text-sm text-black rounded-md p-1"><span className="material-symbols-outlined">save</span></button> */}
                     
                     </div>
 
@@ -574,7 +634,9 @@ function Routine() {
                             className=" flex flex-col items-center mb-2 rounded-lg">
                             <div className="flex flex-col z-0 top-0 left-0 w-full bg-gray-700 rounded-lg">
                                 <div
-                                    onClick={() => toggleCurrExercise(exIndex)}
+                                    onClick={() => {
+                                            if(!showMore)toggleCurrExercise(exIndex);
+                                    }}
                                     className="relative shadow-lg bg-card-dark rounded-lg p-3 z-30 flex items-center w-full cursor-pointer">
                                     <span onClick={(e) => {setShowMoreOverlay(true); setShowMore(exIndex); e.stopPropagation(e);}} className="absolute top-0 right-0 text-md material-symbols-outlined px-2 py-1">more_horiz</span>
                                     {/* {showMoreOverlay &&
@@ -585,8 +647,8 @@ function Routine() {
                                         {!isSetRepRange &&
                                         <ul onClick={(e) => e.stopPropagation(e)} className="text-xs">
                                             
-                                            <li onClick={(e) =>{setIsSetRepRange(true); }} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer"><span className="material-symbols-outlined text-xs">edit</span>Set Rep Range</li>
-                                            <li onClick={() => deleteExercise(index, exIndex)} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer"><span className="material-symbols-outlined text-xs">delete</span>Delete Exercise</li>
+                                            <li onClick={(e) =>{setIsSetRepRange(true); }} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer active:bg-gray-600/10"><span className="material-symbols-outlined text-xs">edit</span>Set Rep Range</li>
+                                            <li onClick={() => deleteExercise(index, exIndex)} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer active:bg-gray-600/10"><span className="material-symbols-outlined text-xs">delete</span>Delete Exercise</li>
                                             <li className="flex flex-col">
                                                 <span className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer"><span className="material-symbols-outlined text-xs">fitness_center</span>Weight Unit</span>
                                                 <div className="flex flex-col justify-center px-4 pb-2">
