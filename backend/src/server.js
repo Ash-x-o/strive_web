@@ -32,7 +32,7 @@ app.use('/uploads', express.static('uploads'));
 
 // React build
 app.use(express.static(
-  path.join(__dirname, "../frontend/build")
+  path.join(__dirname, "../../frontend/build")
 ));
 
 app.use("/api/users", userApi);
