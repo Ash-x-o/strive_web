@@ -628,7 +628,7 @@ function Routine() {
     return (
         <div className="relative bg-bg-dark font-display text-white h-screen p-4 flex flex-col">
             <h1 className="text-center mb-5 text-xl">Daily Workout</h1>
-            <div className="h-full overflow-y-auto">
+            <div className="h-full overflow-y-auto pb-20">
                 <ul className="flex justify-between p-2">
                     {orderedWeek.map((d, i) => (
                         <li

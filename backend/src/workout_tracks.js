@@ -27,7 +27,7 @@ const workoutTrackSchema = new mongoose.Schema({
     
 }, { timestamps: true});
 
-const WorkoutTrack = mongoose.model('WorkoutTrack', workoutTrackSchema);
+const WorkoutTrack = mongoose.model('WorkoutTrack', workoutTrackSchema, 'workout_tracks');
 
 // routes
 router.post('/add', async (req, res) => {
