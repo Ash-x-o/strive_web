@@ -665,7 +665,7 @@ function Routine() {
                                                 onClick={(e) =>{
                                                     setEditingCell({ workoutIndex: index, exIndex, setIndex, field: "reps" })
                                                     const value = parseInt(e.target.value, 10); // CHANGED
-                                                    if(value >= 0) return;
+                                                    if(value > 0) return;
                                                     updateSetField(index, exIndex, setIndex, "reps", null)
                                                 }} // CHANGED
                                             >
