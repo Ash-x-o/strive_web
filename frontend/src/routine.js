@@ -454,6 +454,14 @@ function Routine() {
         });
     };
 
+    const changeWeightUnit = (workoutIndex, exerciseIndex, unit) => {
+        setRoutine(prev => {
+            const updated = structuredClone(prev);
+            updated.workouts[workoutIndex].exercises[exerciseIndex].weightUnit = unit;
+            return updated;
+        });
+    };
+
     const deleteExercise = (workoutIndex, exerciseIndex) => {
         setRoutine(prev => {
             const updated = structuredClone(prev);
@@ -573,16 +581,32 @@ function Routine() {
                                         <div onClick={() => {setShowMoreOverlay(false); setShowMore(null)}} className="fixed top-0 left-0 w-screen h-screen bg-[rgba(0,0,0,0.1)] z-20 backdrop-blur-[5px]"/>
                                     } */}
                                     {showMore === exIndex && showMoreOverlay &&
-                                    <div ref={moreRef} className="absolute top-8 right-0 p-2 z-32 bg-card-dark rounded shadow-lg">
+                                    <div ref={moreRef} className="absolute top-8 right-0 z-32 bg-card-dark rounded shadow-lg">
                                         {!isSetRepRange &&
-                                        <ul className="text-xs">
-                                            <li onClick={(e) =>{setIsSetRepRange(true); e.stopPropagation(e)}} className="flex justify-start gap-2 items-center p-2 hover:bg-bg-dark rounded cursor-pointer"><span className="material-symbols-outlined text-xs">edit</span>Set Rep Range</li>
-                                            <li onClick={() => deleteExercise(index, exIndex)} className="flex justify-start gap-2 items-center p-2 hover:bg-bg-dark rounded cursor-pointer"><span className="material-symbols-outlined text-xs">delete</span>Delete Exercise</li>
+                                        <ul onClick={(e) => e.stopPropagation(e)} className="text-xs">
+                                            
+                                            <li onClick={(e) =>{setIsSetRepRange(true); }} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer"><span className="material-symbols-outlined text-xs">edit</span>Set Rep Range</li>
+                                            <li onClick={() => deleteExercise(index, exIndex)} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer"><span className="material-symbols-outlined text-xs">delete</span>Delete Exercise</li>
+                                            <li className="flex flex-col">
+                                                <span className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer"><span className="material-symbols-outlined text-xs">fitness_center</span>Weight Unit</span>
+                                                <div className="flex flex-col justify-center px-4 pb-2">
+                                                    <div className="flex gap-4 items-center">
+                                                        
+                                                        <input type="radio" className="text-primary text-sm bg-accent focus-ring-0 ring-0 focus:text-primary focus:bg-primary found:outline-none outline-none border-none focus:border-none" name={`weightUnit-${index}-${exIndex}`} value="kg" checked={exercise.weightUnit === "kg"} onChange={() => {changeWeightUnit(index, exIndex, "kg")}} />
+                                                        <label className="mb-1">kg</label>
+                                                    </div>
+                                                    <div className="flex gap-4 items-center">
+                                                        <input type="radio" className="text-primary text-sm bg-accent focus-ring-0 ring-0 focus:text-primary focus:bg-primary found:outline-none outline-none border-none focus:border-none" name={`weightUnit-${index}-${exIndex}`} value="lbs" checked={exercise.weightUnit === "lbs"} onChange={() => {changeWeightUnit(index, exIndex, "lbs")}} />
+                                                        <label  className="mb-1">lbs</label>
+
+                                                    </div>
+                                                </div>
+                                            </li>
                                         </ul>
                                         }
                                         {isSetRepRange &&
-                                        <div onClick={(e) =>{e.stopPropagation(e)}} className="z-50 flex flex-col text-xs">
-                                            <span>Set Rep Range</span>
+                                        <div onClick={(e) =>{e.stopPropagation(e)}} className="z-50 flex flex-col text-xs p-2">
+                                            <span><span onClick={() => setIsSetRepRange(false)} className="material-symbols-outlined text-sm mr-1">chevron_left</span>Set Rep Range</span>
                                             <div className="flex justify-center gap-8">
                                                 <div className="flex flex-col justify-center items-center">
                                                     <label>Min</label>
@@ -655,7 +679,7 @@ function Routine() {
                                                     />
 
                                                 ) : (
-                                                    `${set.weight === null ? "0" : set.weight} kg`
+                                                    `${set.weight === null ? "0" : set.weight} ${exercise.weightUnit}`
                                                 )}
                                             </td>
 
