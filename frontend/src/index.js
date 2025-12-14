@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { HashRouter, Route, Router, Routes } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Route, Router, Routes } from 'react-router-dom';
 import Routine from './routine.js'
 import GetStarted from './get_started.js';
 import AddExercise from './add_exercise.js';
@@ -13,7 +13,7 @@ import Signup from './signup.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <HashRouter>
+    <BrowserRouter>
         <Routes>
             <Route path="/routine" element={<Routine />} />
             <Route path="/" element={<GetStarted />} />
@@ -21,7 +21,7 @@ root.render(
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
         </Routes>
-    </HashRouter>
+    </BrowserRouter>
 
 );
 
