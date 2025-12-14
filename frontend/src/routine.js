@@ -24,7 +24,7 @@ function Routine() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/users/check-session`, {
+                const response = await fetch(`/api/users/check-session`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -198,7 +198,7 @@ function Routine() {
 
     const getExcerciseImg = (exId) => {
         const exercise = allExercises.find(ex => ex._id === exId);
-        return exercise ? `${BACKEND_URL}/uploads/${exercise.exImage}` : flatBenchPress;
+        return exercise ? `/uploads/${exercise.exImage}` : flatBenchPress;
     };
 
     const getExerciseName = (exId) => {
@@ -210,7 +210,7 @@ function Routine() {
 
     const logout = async () => {
         try {
-            const response = await fetch(`${BACKEND_URL}/api/users/logout`, {
+            const response = await fetch(`/api/users/logout`, {
                 method: "POST",
                 credentials: "include",
             });
@@ -233,7 +233,7 @@ function Routine() {
     useEffect(() => {
         const fetchExercises = async () => {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/exercises/get-all`, {
+                const response = await fetch(`/api/exercises/get-all`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -282,7 +282,7 @@ function Routine() {
         if(!user) return;
         const fetchUserRoutine = async () => {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/routines/get-all-by-user/${user._id}`, {
+                const response = await fetch(`/api/routines/get-all-by-user/${user._id}`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -324,7 +324,7 @@ function Routine() {
         const confirmed = window.confirm("Are you sure you want to save this workout?");
         if (!confirmed) return;
         try{
-            const response = await fetch(`${BACKEND_URL}/api/workoutTracks/add`, {
+            const response = await fetch(`/api/workoutTracks/add`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -355,7 +355,7 @@ function Routine() {
         if(!routine) return;
         if(routine._id === ""){
             try{
-                const response = await fetch(`${BACKEND_URL}/api/routines/add`, {
+                const response = await fetch(`/api/routines/add`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -380,7 +380,7 @@ function Routine() {
             }
         }else{
             try {
-                const response = await fetch(`${BACKEND_URL}/api/routines/update/${routine._id}`, {
+                const response = await fetch(`/api/routines/update/${routine._id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
@@ -684,7 +684,7 @@ function Routine() {
                                 {filteredExercises.map((exercise, index) => (
                                     <li onClick={() => addExercise(exercise)} key={index} className="p-2 border rounded-lg border-gray-600 cursor-pointer hover:bg-bg-dark mb-2">
                                         <div className="flex items-center">
-                                            <img src={`${BACKEND_URL}/uploads/${exercise.exImage}`} alt={exercise.exName} className="w-16 h-16 rounded-lg mr-2 object-cover inline-block align-middle"/>
+                                            <img src={`/uploads/${exercise.exImage}`} alt={exercise.exName} className="w-16 h-16 rounded-lg mr-2 object-cover inline-block align-middle"/>
                                             <div>
                                                 <span className="align-middle text-sm ml-2">{exercise.exName}</span>
                                                 <div className="text-xs text-gray-400 ml-2 flex items-center gap-2">{exercise.equipment}<span className="material-symbols-outlined text-xs">{getIcon(exercise.equipment)}</span></div>

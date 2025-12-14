@@ -10,7 +10,7 @@ function AddExercise() {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/users/check-session`, {
+                const response = await fetch(`/api/users/check-session`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -52,7 +52,7 @@ function AddExercise() {
         formData.append("exImage", exerciseImage);
         formData.append("equipment", equipment);
         try {
-            const response = await fetch(`${BACKEND_URL}/api/exercises/add`, {
+            const response = await fetch(`/api/exercises/add`, {
                 method: "POST",
                 body: formData,
                 credentials: "include",
@@ -87,7 +87,7 @@ function AddExercise() {
     useEffect(() => {
         const fetchExercises = async () => {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/exercises/get-all`, {
+                const response = await fetch(`/api/exercises/get-all`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -134,7 +134,7 @@ function AddExercise() {
 
     const getImageUrl = (exImage) => {
         if(typeof exImage === 'string'){
-            return `${BACKEND_URL}/uploads/${exImage}`
+            return `/uploads/${exImage}`
         }else{
             return URL.createObjectURL(exImage);
         }
