@@ -193,6 +193,25 @@ function Routine() {
     }
     
     const addExercise = (exercise) => {
+        if(replacingExercise){
+            setRoutine(prev => {
+                const updated = structuredClone(prev);
+                const exIndex = updated.workouts[currentWorkout]
+                    .exercises.findIndex(ex => ex.exId === replacingExercise.exId);
+                if(exIndex !== -1){
+                    updated.workouts[currentWorkout]
+                        .exercises[exIndex] = {
+                            exId: exercise._id,
+                            weightUnit: replacingExercise.weightUnit || "kg",
+                            status: replacingExercise.status || "pending",
+                            sets: replacingExercise.sets.map(set => ({ ...set }))
+                        };
+                }
+                return updated;
+            });
+            setReplacingExercise(null);
+            return;
+        }
         setRoutine(prev => {
             const updated = structuredClone(prev);
             updated.workouts[currentWorkout]
@@ -598,6 +617,10 @@ function Routine() {
     });
     };
 
+    const [replacingExercise, setReplacingExercise] = useState(null);
+
+    
+
 
 
 
@@ -691,6 +714,7 @@ function Routine() {
                                                 
                                                 <li onClick={(e) =>{setIsSetRepRange(true); }} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer active:bg-gray-600/10"><span className="material-symbols-outlined text-xs">edit</span>Set Rep Range</li>
                                                 <li onClick={() => deleteExercise(index, exIndex)} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer active:bg-gray-600/10"><span className="material-symbols-outlined text-xs">delete</span>Delete Exercise</li>
+                                                <li onClick={() =>{ setShowOverlay(true);setReplacingExercise(exercise);setAddExerciseDialog(true); }} className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer active:bg-gray-600/10"><span className="material-symbols-outlined text-xs">swap_horiz</span>Replace Exercise</li>
                                                 <li className="flex flex-col">
                                                     <span className="flex justify-start gap-2 items-center py-2 px-4 rounded cursor-pointer"><span className="material-symbols-outlined text-xs">fitness_center</span>Weight Unit</span>
                                                     <div className="flex flex-col justify-center px-4 pb-2">
