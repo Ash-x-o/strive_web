@@ -428,20 +428,32 @@ function Routine() {
             }
         }else{
             try {
-                const response = await fetch(`/api/routines/update/${routine._id}`, {
+                const routineClone = structuredClone(routine);
+                routineClone.workouts.forEach((workout) => {
+                  workout.exercises.forEach((exercise) => {
+                    exercise.sets.forEach((set) => {
+                      set.status = "pending"; // set all sets to pending
+                    });
+                    exercise.status = "pending"; // also set exercise status to pending
+                  });
+                });
+
+                const response = await fetch(
+                  `/api/routines/update/${routine._id}`,
+                  {
                     method: "PUT",
                     headers: {
-                        "Content-Type": "application/json"
+                      "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        routineName : routine.routineName,
-                        workouts : routine.workouts,
-                        isDefault: routine.isDefault
+                        
+                      routineName: routineClone.routineName,
+                      workouts: routineClone.workouts,
+                      isDefault: routineClone.isDefault,
                     }),
                     credentials: "include",
-                    
-
-                });
+                  }
+                );
                 const data = await response.json();
                 if(response.ok) {
                     setRoutine(data.routine)

@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const workoutTrackSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     routineId: { type: mongoose.Schema.Types.ObjectId, ref: 'Routine', required: true },
-    workouts: { type: [{
+    workout: {
             day: { type: String, default:""},
             type:{ type: String, default:""},
             exercises: [{ 
@@ -21,7 +21,7 @@ const workoutTrackSchema = new mongoose.Schema({
                 status: { type: String, default: 'pending' }
              }],
             status: { type: String, default: 'pending' }         
-        }], required: true },
+        },
     date: { type: Date, required: true },
     status: { type: String, default: 'completed' },
     
@@ -32,9 +32,8 @@ const WorkoutTrack = mongoose.model('WorkoutTrack', workoutTrackSchema, 'workout
 // routes
 router.post('/add', async (req, res) => {
     try {
-        console.log("Request body:", req.body);
-        const { userId, routineId, workouts, date } = req.body;
-        const newWorkoutTrack = new WorkoutTrack({ userId, routineId, workouts, date });
+        const { userId, routineId, workout, date, status } = req.body;
+        const newWorkoutTrack = new WorkoutTrack({ userId, routineId, workout, date, status });
         const savedWorkoutTrack = await newWorkoutTrack.save();
         res.status(201).json({ message: 'Workout track added successfully' , workoutTrack: savedWorkoutTrack});
     } catch (error) {
