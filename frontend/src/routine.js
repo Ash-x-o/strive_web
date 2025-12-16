@@ -555,6 +555,7 @@ function Routine() {
 
 
     const didCompleted = (date) => {
+        console.log("Checking completion for date:", date);
         if(!workoutTracks) return false;
         const track = workoutTracks.find(track => {
             const trackDate = new Date(track.date);
@@ -652,7 +653,7 @@ function Routine() {
                            
                             className="text-xs flex flex-col justify-center items-center "
                             key={i}>
-                                <span  onClick={() => {setCurrentWorkout(i)}} className={`${didCompleted(new Date(d.date)) ? "border border-primary " : ""}flex justify-center items-center ${currentWorkout === i ? "bg-primary text-black" : "bg-card-dark text-white"} rounded-full w-8 h-8 mb-1`}>{d.date}</span>
+                                <span  onClick={() => {setCurrentWorkout(i)}} className={`${didCompleted(d.date) ? "border border-primary " : ""}flex justify-center items-center ${currentWorkout === i ? "bg-primary text-black" : "bg-card-dark text-white"} rounded-full w-8 h-8 mb-1`}>{d.date}</span>
                                 <span className={`${d.date === new Date().getDate() ? "underline underline-offset-4 underline-primary text-primary" : ""}`}>{d.day}</span>
                         </li>
                     ))}
