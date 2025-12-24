@@ -181,45 +181,49 @@ function WeightProgress({ user }) {
 
 
     return (
-        <div className="p-4 bg-bg-dark text-white rounded-lg shadow-lg w-full w-full mx-auto">
-            <h2 className="text-xl mb-4">Weight Progress</h2>
-            <div className="flex gap-2 mb-4 justify-center">
-                <input
-                    type="number"
-                    value={weightInput !== 0 ? weightInput : ''}
-                    onChange={e => setWeightInput(e.target.value)}
-                    placeholder="Enter weight (kg)"
-                    className="p-2 w-full rounded bg-card-dark text-white outline-none border-none w-32"
-                />
-                <button
-                    onClick={addWeight}
-                    className="bg-primary text-black px-4 rounded"
-                >
-                    Add
-                </button>
-            </div>
-
-            {iconReady && <Line data={data} options={options} />}
-
-            <div className="border border-gray-500/20 px-4 py-2 mt-4 ">
-            <h1 onClick={() => setShowWeightHistory(!showWeightHistory)}
-                className="cursor-pointer text-sm flex justify-between items-center"
-                >Weight History<span className="material-symbols-outlined">arrow_drop_down</span></h1>
-            {showWeightHistory &&
-            dailyWeights.length > 0 && (
-                <ul className="mt-4 max-h-48 overflow-y-auto">
-                    {dailyWeights.map((d, i) => (
-                        <li key={i} className="flex justify-between items-center p-2 bg-card-dark rounded mb-1">
-                            <span>{new Date(d.date).toLocaleDateString()}</span>
-                            <span className="flex items-center gap-1">
-                                {d.weight} kg
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-            )}
-            </div>
+      <div className="p-4 bg-bg-dark text-white rounded-lg shadow-lg w-full w-full mx-auto">
+        <h2 className="text-xl mb-4">Weight Progress</h2>
+        <div className="flex gap-2 mb-4 justify-center">
+          <input
+            type="number"
+            value={weightInput !== 0 ? weightInput : ""}
+            onChange={(e) => setWeightInput(e.target.value)}
+            placeholder="Enter weight (kg)"
+            className="p-2 w-full rounded bg-card-dark text-white outline-none border-none w-32"
+          />
+          <button
+            onClick={addWeight}
+            className="bg-primary text-black px-4 rounded"
+          >
+            Add
+          </button>
         </div>
+
+        {iconReady && <Line data={data} options={options} />}
+
+        <div className="border border-gray-500/20 px-4 py-2 mt-4 ">
+          <h1
+            onClick={() => setShowWeightHistory(!showWeightHistory)}
+            className="cursor-pointer text-sm flex justify-between items-center"
+          >
+            Weight History
+            <span className="material-symbols-outlined">arrow_drop_down</span>
+          </h1>
+          {showWeightHistory && dailyWeights.length > 0 && (
+            <ul className="mt-4 max-h-48 overflow-y-auto">
+              {[...dailyWeights].reverse().map((d, i) => (
+                <li
+                  key={i}
+                  className="flex justify-between items-center p-2 bg-card-dark rounded mb-1"
+                >
+                  <span>{new Date(d.date).toLocaleDateString()}</span>
+                  <span className="flex items-center gap-1">{d.weight} kg</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     );
 }
 

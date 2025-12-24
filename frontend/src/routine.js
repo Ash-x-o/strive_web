@@ -199,6 +199,7 @@ function Routine() {
     }
     
     const addExercise = (exercise) => {
+        // if(!routine) return;
         if(replacingExercise){
             setRoutine(prev => {
                 const updated = structuredClone(prev);
@@ -328,25 +329,42 @@ function Routine() {
                 if (response.ok) {
                     console.log("Routine fetched successfully, ");
                     const routineData = data.routines;
-                    if(routineData && routineData.length > 0) {
-                        const routine = routineData.find(r => r.isDefault === true);
-                        setRoutine(routine);
-                    }else{
+                    if (routineData && routineData.length > 0) {
+                      const routine = routineData.find(
+                        (r) => r.isDefault === true
+                      );
+                      if (routine) setRoutine(routine);
+                      else {
                         const emptyRoutine = {
-                            _id: "",
-                            routineName: "",
-                            isDefault: false,
-                            workouts: Array.from({ length: 7 }, () => ({ 
-                                day: "",
-                                type: "",
-                                minRep: 0,
-                                maxRep: 0,
-                                status: "",
-                                exercises: []
-                            }))
+                          _id: "",
+                          routineName: "",
+                          isDefault: false,
+                          workouts: Array.from({ length: 7 }, () => ({
+                            day: "",
+                            type: "",
+                            minRep: 0,
+                            maxRep: 0,
+                            status: "",
+                            exercises: [],
+                          })),
                         };
                         setRoutine(emptyRoutine);
-
+                      }
+                    } else {
+                      const emptyRoutine = {
+                        _id: "",
+                        routineName: "",
+                        isDefault: false,
+                        workouts: Array.from({ length: 7 }, () => ({
+                          day: "",
+                          type: "",
+                          minRep: 0,
+                          maxRep: 0,
+                          status: "",
+                          exercises: [],
+                        })),
+                      };
+                      setRoutine(emptyRoutine);
                     }
                 }
                 
@@ -555,7 +573,6 @@ function Routine() {
 
 
     const didCompleted = (date) => {
-        console.log("Checking completion for date:", date);
         if(!workoutTracks) return false;
         const track = workoutTracks.find(track => {
             const trackDate = new Date(track.date);
