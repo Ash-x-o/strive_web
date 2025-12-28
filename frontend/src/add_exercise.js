@@ -20,7 +20,6 @@ function AddExercise() {
                         setUser(data.user);
                         console.log("Session check successful:", data.user.userName);
                     }else{
-                        alert("Access denied. Admins only.");
                         navigate('/routine');
                     }
                 } else {
@@ -133,12 +132,65 @@ function AddExercise() {
     };
 
     const getImageUrl = (exImage) => {
-        if(typeof exImage === 'string'){
-            return `/uploads/${exImage}`
-        }else{
-            return URL.createObjectURL(exImage);
-        }
+        
+        const imageUrl = exImage.startsWith("http")
+          ? exImage
+          : `/uploads/${exImage}`;
+        return imageUrl;
     };
+
+    const [onEdit, setOnEdit] = useState(null);
+
+    const [updatingExName, setUpdatingExName] = useState("");
+    const [updatingEquipment, setUpdatingEquipment] = useState("");
+    const [updatingExImage, setUpdatingExImage] = useState(null);
+
+    useEffect(() => {
+        if(onEdit){
+            setUpdatingExName(onEdit.exName);
+            setUpdatingEquipment(onEdit.equipment);
+            setUpdatingExImage(null);
+        }
+    }, [onEdit]);
+
+    const updateExercise = async () => {
+        // Implementation for updating exercise details
+        try{
+            const formData = new FormData();
+            formData.append("exName", updatingExName);
+            formData.append("equipment", updatingEquipment);
+            if(updatingExImage){
+                formData.append("exImage", updatingExImage);
+            }
+            const response = await fetch(`/api/exercises/update/${onEdit._id}`, {
+                method: "PUT",
+                body: formData,
+                credentials: "include",
+            });
+            const data = await response.json();
+            if(response.ok){
+                console.log("Exercise updated successfully");
+                const updatedExercise = data.exercise;
+                const updatedAllExercises = allExercises.map(exercise => 
+                    exercise._id === updatedExercise._id ? updatedExercise : exercise
+                );
+                setAllExercises(updatedAllExercises);
+                const updatedFilteredExercises = filteredExcercises.map(exercise => 
+                    exercise._id === updatedExercise._id ? updatedExercise : exercise
+                );
+                setFilteredExercises(updatedFilteredExercises);
+                setOnEdit(null);
+            } else {
+                console.log("Failed to update exercise: ", data.message);
+            }
+        }
+        catch(error){
+            console.error("Error updating exercise:", error);
+        }
+    }
+
+
+    
     return (
         <div className="bg-bg-dark w-screen h-screen overflow-y-auto flex flex-col items-center p-4">
             
@@ -161,7 +213,7 @@ function AddExercise() {
                     <ul className="h-4/5 overflow-y-auto mt-4">
                     
                         {filteredExcercises.map((exercise, index) => (
-                            <li key={index} className="p-2 border rounded-lg border-gray-600 cursor-pointer hover:bg-bg-dark mb-2">
+                            <li key={index} onClick={() => setOnEdit(exercise)} className="p-2 border rounded-lg border-gray-600 cursor-pointer hover:bg-bg-dark mb-2">
                                 <div className="flex items-center">
                                     <img src={getImageUrl(exercise.exImage)} alt={exercise.exName} className="w-16 h-16 rounded-lg mr-2 object-cover inline-block align-middle"/>
                                     <div>
@@ -178,6 +230,35 @@ function AddExercise() {
                     )}       
                 </div>
             </div>
+            {onEdit &&
+            <div onClick={() => setOnEdit(null)} className="fixed top-0 left-0 backdrop-blur-[5px] w-screen h-screen flex justify-center items-center">
+                <div onClick={(e) => e.stopPropagation()} className="w-[80%] h-[50%] bg-card-dark rounded-lg shadow-lg p-4">
+                    <div className="flex flex-col gap-4 h-full">
+                        <div className="relative w-full h-full rounded-lg border border-dashed border-gray-500/20 flex justify-center items-center p-2 overflow-hidden">
+                            <img src={
+                                    updatingExImage ? URL.createObjectURL(updatingExImage) : getImageUrl(onEdit.exImage)
+                                }
+                                alt={onEdit.exName} className="w-full h-full object-cover rounded-lg opacity-50"/>
+                            <label className="absolute w-full h-full flex justify-center items-center cursor-pointer">
+                                <input type="file" onChange={(e) => setUpdatingExImage(e.target.files[0])} className="w-full h-full h-auto object-cover rounded-lg hidden"/>
+                                <div className="flex flex-col items-center gap-2">
+                                    <span className="material-symbols-outlined text-6xl text-white/70">
+                                        cloud_upload
+                                    </span>
+                                    <span className="text-white/70">Click to upload or drag and drop</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <input value={updatingExName} onChange={(e) => setUpdatingExName(e.target.value)} type="text" placeholder="Exercise name" className="text-sm text-white bg-gray-500/10 border border-gray-500/20 focus:border-gray-500/20 outline-none focus:outline-none ring-0 focus:ring-0 rounded-full"/>
+                            <input value={updatingEquipment} onChange={(e) => setUpdatingEquipment(e.target.value)} type="text" placeholder="Equipment" className="text-sm text-white bg-gray-500/10 border border-gray-500/20 focus:border-gray-500/20 outline-none focus:outline-none ring-0 focus:ring-0 rounded-full"/>
+                        </div>
+                        <button onClick={() => {setOnEdit(null); updateExercise();}} className="mt-auto bg-primary text-white px-4 py-2 rounded-full hover:bg-primary/90 active:bg-primary/80">save</button>                        
+                    </div>
+
+                </div>
+            </div>
+        }
         </div>
     )
 };

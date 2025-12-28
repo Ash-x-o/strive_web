@@ -1,0 +1,47 @@
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
+// ---------- CLOUDINARY ----------
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+if (process.env.NODE_ENV === "production") {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
+
+// ---------- LOCAL UPLOAD ----------
+const uploadDir = path.join(__dirname, "../uploads");
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const localStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const original = file.originalname.toLowerCase().replace(/\s+/g, "_");
+    cb(null, `${Date.now()}_${original}`);
+  },
+});
+
+// ---------- CLOUDINARY STORAGE ----------
+const cloudStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "exercises",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+  },
+});
+
+// ---------- SWITCH BY ENV ----------
+const storage =
+  process.env.NODE_ENV === "production" ? cloudStorage : localStorage;
+
+const upload = multer({ storage });
+
+module.exports = upload;

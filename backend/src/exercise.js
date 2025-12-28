@@ -1,36 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const multer = require("multer");
-const path = require("path");
-const fs = require('fs');
 
-const uploadDir = path.join(__dirname, '../uploads');
-
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Storage settings
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    let original = file.originalname.toLowerCase();
-
-    // replace spaces with underscores
-    original = original.replace(/\s+/g, "_");
-
-    // add timestamp to avoid duplicates
-    const uniqueName = original + "_" + Date.now();
-
-    cb(null, uniqueName);
-  }
-});
-
-const upload = multer({ storage: storage });
-
+const upload = require("./upload");
 
 const exerciseSchema = new mongoose.Schema({
     exName: { type: String, required: true,},
@@ -44,7 +16,15 @@ const Exercise = mongoose.model('Exercise', exerciseSchema, 'exercises');
 router.post('/add', upload.single("exImage"), async (req, res) => {
     try {
         const { exName, equipment } = req.body;
-        const exImage = req.file.filename;
+        let exImage;
+
+        if (process.env.NODE_ENV === "production") {
+          // Cloudinary returns full URL
+          exImage = req.file.path;
+        } else {
+          // Local file name
+          exImage = req.file.filename;
+        }
         const newExercise = new Exercise({ exName, exImage, equipment });
         const savedExercise = await newExercise.save();
         res.status(201).json({ message: 'Exercise added successfully' , exercise: savedExercise});
@@ -63,6 +43,32 @@ router.get('/get-all', async (req, res) => {
     }
 });
 
+router.put('/update/:id', upload.single("exImage"), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { exName, equipment } = req.body;
+        const updateData = { exName, equipment };
+        if (req.file) {
+            updateData.exImage = req.file.filename;
+        }
+        const updatedExercise = await Exercise.findByIdAndUpdate(id, updateData, { new: true });
+        res.status(200).json({ message: 'Exercise updated successfully', exercise: updatedExercise });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+router.delete('/delete/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Exercise.findByIdAndDelete(id);
+        res.status(200).json({ message: 'Exercise deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 
 

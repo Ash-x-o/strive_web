@@ -235,9 +235,15 @@ function Routine() {
 
    
 
-    const getExcerciseImg = (exId) => {
+    const getExerciseImg = (exId) => {
         const exercise = allExercises.find(ex => ex._id === exId);
-        return exercise ? `/uploads/${exercise.exImage}` : flatBenchPress;
+        const imageUrl = exercise?.exImage
+          ? exercise.exImage.startsWith("http")
+            ? exercise.exImage
+            : `/uploads/${exercise.exImage}`
+          : "https://placehold.co/600x400/1f2937/9ca3af?text=No+Image";
+
+        return imageUrl;
     };
 
     const getExerciseName = (exId) => {
@@ -775,7 +781,7 @@ function Routine() {
                                             {...attributes}
                                             {...listeners}
                                             className="material-symbols-outlined cursor-grab active:cursor-grabbing touch-none mr-2">drag_indicator</span>
-                                        <img src={getExcerciseImg(exercise.exId)} alt="Barbell Bench Press" className="w-16 h-16 rounded-lg mr-2 object-cover"/>
+                                        <img src={getExerciseImg(exercise.exId)} alt={getExerciseName(exercise.exId)} className="w-16 h-16 rounded-lg mr-2 object-cover"/>
                                         <div className="h-full flex flex-col justify-center ">   
                                             <h3 className="text-sm">{getExerciseName(exercise.exId)}</h3>
                                             <p className="text-xs text-gray-400">{exercise.sets.length} sets x {exercise.minRep}-{exercise.maxRep}  reps</p>

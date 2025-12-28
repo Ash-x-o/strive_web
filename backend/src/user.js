@@ -3,36 +3,8 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
-const multer = require("multer");
-const path = require("path");
-const fs = require('fs');
 
-
-const uploadDir = path.join(__dirname, '../uploads');
-
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Storage settings
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    let original = file.originalname.toLowerCase();
-
-    // replace spaces with underscores
-    original = original.replace(/\s+/g, "_");
-
-    // add timestamp to avoid duplicates
-    const uniqueName = original  + "_" + Date.now();
-
-    cb(null, uniqueName);
-  }
-});
-
-const upload = multer({ storage: storage });
+const upload = require("./upload");
 
 
 const userSchema = new mongoose.Schema({
