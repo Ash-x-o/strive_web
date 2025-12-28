@@ -11,6 +11,7 @@ import Login from './login.js';
 import Signup from './signup.js';
 import ProgressStats from './progress_stats.js';
 import Home from './home.js';
+import Dashboard from './dashboard.js';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -24,6 +25,7 @@ root.render(
             <Route path="/signup" element={<Signup />} />
             <Route path="/progress_stats" element={<ProgressStats />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
     </BrowserRouter>
 

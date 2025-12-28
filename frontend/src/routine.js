@@ -247,22 +247,7 @@ function Routine() {
 
 
 
-    const logout = async () => {
-        try {
-            const response = await fetch(`/api/users/logout`, {
-                method: "POST",
-                credentials: "include",
-            });
-            if (response.ok) {
-                setUser(null);
-                navigate('/login');
-            } else {
-                console.error("Logout failed");
-            }
-        } catch (error) {
-            console.error("Error during logout:", error);
-        }
-    };
+    
     
     const [allExercises, setAllExercises] = useState([]);
     const [searchReq, setSearchReq] = useState("");
@@ -1003,15 +988,19 @@ export function NavBar () {
         <div className="w-full backdrop-blur-[5px]  bg-card-dark/20 border-x border-x-gray-500/20 border-t border-t-gray-500/20 flex justify-between items-center px-4 py-2 rounded-t-lg">
             <ul className="flex justify-center gap-20 items-center w-full">
                 <li className="flex flex-col justify-center items-center" onClick={() => navigate('/routine')}>
-                    <span className={`text material-symbols-outlined mb-1 ${checkActive('/routine') ? 'text-primary' : 'text-white'}`}>fitness_center</span>
+                    <span className={`text material-symbols-rounded mb-1 ${checkActive('/routine') ? 'text-primary' : 'text-white'}`}>fitness_center</span>
                     <span className={`text-[10px] ${checkActive('/routine') ? 'text-primary' : 'text-white'}`}>Routine</span>
                 </li>
-                <li className="flex flex-col justify-center items-center" onClick={() => navigate('/home')}>
+                {/* <li className="flex flex-col justify-center items-center" onClick={() => navigate('/home')}>
                     <span className={`text material-symbols-outlined mb-1 ${checkActive('/home') ? 'text-primary' : 'text-white'}`}>home</span>
                     <span className={`text-[10px] ${checkActive('/home') ? 'text-primary' : 'text-white'}`}>Home</span>                    
+                </li> */}
+                <li className="flex flex-col justify-center items-center" onClick={() => navigate('/dashboard')}>
+                    <span className={`text material-symbols-rounded mb-1 ${checkActive('/dashboard') ? 'text-primary' : 'text-white'}`}>dashboard</span>
+                    <span className={`text-[10px] ${checkActive('/dashboard') ? 'text-primary' : 'text-white'}`}>Dashboard</span>                    
                 </li>
                 <li className="flex flex-col justify-center items-center" onClick={() => navigate('/progress_stats')}>
-                    <span className={`text material-symbols-outlined mb-1 ${checkActive('/progress_stats') ? 'text-primary' : 'text-white'}`}>trending_up</span>
+                    <span className={`text material-symbols-rounded mb-1 ${checkActive('/progress_stats') ? 'text-primary' : 'text-white'}`}>trending_up</span>
                     <span className={`text-[10px] ${checkActive('/progress_stats') ? 'text-primary' : 'text-white'}`}>Progress</span>
                 </li>
             </ul>

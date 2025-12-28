@@ -23,9 +23,9 @@ const storage = multer.diskStorage({
     original = original.replace(/\s+/g, "_");
 
     // add timestamp to avoid duplicates
-    // const uniqueName = Date.now() + "_" + original;
+    const uniqueName = original + "_" + Date.now();
 
-    cb(null, original);
+    cb(null, uniqueName);
   }
 });
 

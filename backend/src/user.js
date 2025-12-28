@@ -3,6 +3,37 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const path = require("path");
+const fs = require('fs');
+
+
+const uploadDir = path.join(__dirname, '../uploads');
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Storage settings
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    let original = file.originalname.toLowerCase();
+
+    // replace spaces with underscores
+    original = original.replace(/\s+/g, "_");
+
+    // add timestamp to avoid duplicates
+    const uniqueName = original  + "_" + Date.now();
+
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({ storage: storage });
+
 
 const userSchema = new mongoose.Schema({
     userName: { type: String, required: true,},
@@ -14,22 +45,14 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true});
 
 
-// hash password before saving
-userSchema.pre('save', async function (next) {
-    try {
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
-        if (!this.isModified('password')) return next();
-
-        const salt = await bcrypt.genSalt(10);
-        
-
-        this.password = await bcrypt.hash(this.password, salt);
-        
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
+
+
 const User = mongoose.model('User', userSchema, 'users');
 
 
@@ -133,4 +156,72 @@ router.get("/check-session", async (req, res) => {
   }
 
 });
+
+router.post('/change-password/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { oldPassword, newPassword } = req.body;
+        const user = await User.findById(userId);
+
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) return res.status(400).json({ message: 'Old password is incorrect' });
+        user.password = newPassword;
+        await user.save();
+        res.status(200).json({ message: 'Password changed successfully' });
+    } catch (error) {
+        console.error("Change password error:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+router.post('/update-user-info/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { userName, email, profilePic } = req.body;
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        user.userName = userName || user.userName;
+        user.email = email || user.email;
+        user.profilePic = profilePic || user.profilePic;
+        await user.save();
+        res.status(200).json({ message: 'User info updated successfully' });
+    } catch (error) {
+        console.error("Update user info error:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+router.put("/update-profile-pic/:userId", upload.single("profilePic"),async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        user.profilePic = req.file.filename; // assuming 'filename' contains the file name
+        const newPic = (await user.save()).profilePic;
+        res.status(200).json({ message: 'Profile picture updated successfully', profilePic: newPic });
+    } catch (error) {
+        console.error("Update profile picture error:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+router.put("/update-user-info/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { userName, email, profilePic } = req.body;
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        user.userName = userName || user.userName;
+        user.email = email || user.email;
+        user.profilePic = profilePic || user.profilePic;
+        await user.save();
+        res.status(200).json({ message: 'User info updated successfully' });
+    } catch (error) {
+        console.error("Update user info error:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;

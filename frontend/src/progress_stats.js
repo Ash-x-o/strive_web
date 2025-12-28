@@ -177,7 +177,7 @@ function WeightProgress({ user }) {
         }
     };
 
-    const [showWeightHistory, setShowWeightHistory] = useState(true);
+    const [showWeightHistory, setShowWeightHistory] = useState(false);
 
 
     return (
@@ -189,11 +189,12 @@ function WeightProgress({ user }) {
             value={weightInput !== 0 ? weightInput : ""}
             onChange={(e) => setWeightInput(e.target.value)}
             placeholder="Enter weight (kg)"
-            className="p-2 w-full rounded bg-card-dark text-white outline-none border-none w-32"
+            className="p-2 w-full rounded bg-card-dark text-white outline-none border-gray-500/10 ring-0 focus:outline-none focus:ring-0 focus:border-gray-500/20 w-32"
           />
           <button
             onClick={addWeight}
             className="bg-primary text-black px-4 rounded"
+            title="Add today's body weight"
           >
             Add
           </button>
@@ -201,10 +202,10 @@ function WeightProgress({ user }) {
 
         {iconReady && <Line data={data} options={options} />}
 
-        <div className="border border-gray-500/20 px-4 py-2 mt-4 ">
+        <div className="border border-gray-500/10 px-4 py-2 mt-4 rounded">
           <h1
             onClick={() => setShowWeightHistory(!showWeightHistory)}
-            className="cursor-pointer text-sm flex justify-between items-center"
+            className="cursor-pointer text-sm flex justify-between items-center "
           >
             Weight History
             <span className="material-symbols-outlined">arrow_drop_down</span>
