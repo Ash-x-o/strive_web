@@ -154,6 +154,9 @@ npm start
 📷 *Screenshots of the UI and features are included in this repository / LinkedIn post.*
 
 ---
+## 📸 **Video**
+[Watch the video]([./path-to-video/video.mp4](https://github.com/Ash-x-o/strive_web/blob/main/Sequence%2001_3.mp4))
+
 
 ## 🌱 **Future Improvements**
 
