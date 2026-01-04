@@ -160,11 +160,9 @@ npm start
 
 ---
 ## 📸 **Video**
-[Watch the video]([./path-to-video/video.mp4](https://github.com/Ash-x-o/strive_web/blob/main/Sequence%2001_3.mp4))
 
 
-https://github.com/user-attachments/assets/d94a4f3a-94ae-421a-bf45-ba9a4b16ad7b
-
+https://github.com/user-attachments/assets/5d90d32b-cda9-417f-851a-d3566bc21144
 
 
 ## 🌱 **Future Improvements**
