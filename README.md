@@ -151,11 +151,12 @@ npm start
 
 ## 📸 **Screenshots**
 
-<img width="377" height="811" alt="Screenshot 2025-12-28 174711" src="https://github.com/user-attachments/assets/c35854c1-538d-4c31-a28d-97cea8ca61ab" />
-<img width="376" height="665" alt="Screenshot 2025-12-28 174800" src="https://github.com/user-attachments/assets/37d47c08-03f8-4565-b5c1-d23f17b023bd" />
-<img width="378" height="668" alt="Screenshot 2025-12-28 174808" src="https://github.com/user-attachments/assets/520f65b9-4252-448b-bb8c-822b5770665c" />
-<img width="376" height="815" alt="Screenshot 2025-12-28 174836" src="https://github.com/user-attachments/assets/fcbf08bc-c98e-49ad-94bb-d8f929db287f" />
-<img width="373" height="810" alt="Screenshot 2025-12-28 174652" src="https://github.com/user-attachments/assets/fb74e081-b9fd-41cb-abcf-568676e1623e" />
+
+<img width="1024" height="768" alt="4 (2)" src="https://github.com/user-attachments/assets/03d74770-18ed-4f8d-a8fe-5d9eafac80df" />
+<img width="1024" height="768" alt="5 (2)" src="https://github.com/user-attachments/assets/379f272b-2807-4177-b5e9-30892d4f4c3a" />
+<img width="1024" height="768" alt="3 (2)" src="https://github.com/user-attachments/assets/0c421082-6b73-44e6-bfc8-2e4f4d8c7209" />
+<img width="1024" height="768" alt="2 (2)" src="https://github.com/user-attachments/assets/56c26dee-9a11-4654-8a29-33f43ae1204d" />
+<img width="1024" height="768" alt="1 (2)" src="https://github.com/user-attachments/assets/1cbb544d-3682-4b70-bb85-b61d993704b7" />
 
 ---
 ## 📸 **Video**
