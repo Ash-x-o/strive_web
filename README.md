@@ -1,3 +1,5 @@
+![My Banner](https://github.com/Ash-x-o/strive_web/blob/main/Group%205.png)
+
 # 🏋️‍♂️**Strive App – Fitness Tracking Application**
 
 Welcome to **Strive App**, a modern **full-stack fitness tracking web application** designed to help users log workouts, track weight progress, and manage profiles securely and efficiently 💪📈
