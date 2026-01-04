@@ -1,4 +1,4 @@
-**# 🏋️‍♂️ **Strive App – Fitness Tracking Application**
+# 🏋️‍♂️**Strive App – Fitness Tracking Application**
 
 Welcome to **Strive App**, a modern **full-stack fitness tracking web application** designed to help users log workouts, track weight progress, and manage profiles securely and efficiently 💪📈
 
