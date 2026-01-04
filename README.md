@@ -1,0 +1,196 @@
+**# 🏋️‍♂️ **Strive Web – Fitness Tracking Application**
+
+Welcome to **Strive Web**, a modern **full-stack fitness tracking web application** designed to help users log workouts, track weight progress, and manage profiles securely and efficiently 💪📈
+
+---
+
+## 🚀 **Project Overview**
+
+**Strive Web** is built using the **MERN stack** and focuses on providing a clean, user-friendly experience for fitness enthusiasts who want to track their progress over time.
+
+The application supports:
+
+* Secure user authentication
+* Daily weight logging
+* Visual progress tracking using charts
+* Workout & routine tracking
+* Profile management with image uploads
+
+---
+
+## 🧠 **Key Features**
+
+### 🔐 **Authentication & Security**
+
+* User registration and login
+* JWT-based authentication (stored securely in HTTP-only cookies)
+* Password hashing using bcrypt
+* Session validation endpoint
+
+### 🏋️ **Workout Tracking**
+
+* Track workout routines and exercises
+* Log sets, reps, and weights
+* Store workout status (pending / completed)
+* Support for multiple exercises per workout
+
+### 📊 **Weight Progress Visualization**
+
+* Daily weight input
+* Interactive line chart showing progress over time
+* Clean and modern UI styling
+* Data persisted using localStorage and MongoDB
+
+### 🖼️ **Profile Management**
+
+* Update user profile details
+* Upload and update profile pictures
+* Image handling using Multer
+
+---
+
+## 🛠️ **Tech Stack**
+
+### **Frontend** 🌐
+
+* React
+* Tailwind CSS
+* Chart.js
+* React ChartJS 2
+* Material Symbols & React Icons
+
+### **Backend** ⚙️
+
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* JWT (JSON Web Tokens)
+* Multer (file uploads)
+
+---
+
+## 📁 **Project Structure**
+
+```
+strive_web/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── assets/
+│   │   └── styles/
+│   └── package.json
+│
+├── backend/
+│   ├── src/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── middleware/
+│   │   └── uploads/
+│   └── package.json
+│
+└── README.md
+```
+
+---
+
+## ⚙️ **Installation & Setup**
+
+### ✅ **Prerequisites**
+
+* Node.js (v18+ recommended)
+* MongoDB (local or Atlas)
+* npm or yarn
+
+### 🔧 **Backend Setup**
+
+* Clone the repository
+* Navigate to the backend folder
+* Install dependencies
+
+```
+npm install
+```
+
+* Create a `.env` file and add:
+
+```
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+NODE_ENV=development
+```
+
+* Start the server
+
+```
+npm run dev
+```
+
+---
+
+### 🎨 **Frontend Setup**
+
+* Navigate to the frontend folder
+* Install dependencies
+
+```
+npm install
+```
+
+* Start the React app
+
+```
+npm start
+```
+
+---
+
+## 🔄 **API Highlights**
+
+* `POST /register` – Register a new user
+* `POST /login` – Login user
+* `POST /logout` – Logout user
+* `GET /check-session` – Validate user session
+* `POST /change-password/:userId`
+* `POST /update-user-info/:userId`
+* `PUT /update-profile-pic/:userId`
+
+---
+
+## 📸 **Screenshots**
+
+📷 *Screenshots of the UI and features are included in this repository / LinkedIn post.*
+
+---
+
+## 🌱 **Future Improvements**
+
+* Mobile-first PWA support 📱
+* Advanced analytics & insights
+* Cloud image storage (S3 / Cloudinary)
+* Social features (sharing progress)
+* Admin dashboard
+
+---
+
+## 👨‍💻 **Author**
+
+**Koshitha Sandaru**
+Aspiring Full-Stack Developer 🚀
+Focused on building scalable, clean, and user-centric web applications.
+
+---
+
+## ⭐ **Support**
+
+If you like this project:
+
+* Star ⭐ the repository
+* Share feedback
+* Connect with me on LinkedIn
+
+---
+
+💡 *Built with passion, discipline, and consistency — just like fitness.* 💪
+**
