@@ -158,6 +158,10 @@ npm start
 [Watch the video]([./path-to-video/video.mp4](https://github.com/Ash-x-o/strive_web/blob/main/Sequence%2001_3.mp4))
 
 
+https://github.com/user-attachments/assets/d94a4f3a-94ae-421a-bf45-ba9a4b16ad7b
+
+
+
 ## 🌱 **Future Improvements**
 
 * Mobile-first PWA support 📱
