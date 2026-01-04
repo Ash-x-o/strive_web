@@ -1,19 +1,19 @@
-**# 🏋️‍♂️ **Strive Web – Fitness Tracking Application**
+**# 🏋️‍♂️ **Strive App – Fitness Tracking Application**
 
-Welcome to **Strive Web**, a modern **full-stack fitness tracking web application** designed to help users log workouts, track weight progress, and manage profiles securely and efficiently 💪📈
+Welcome to **Strive App**, a modern **full-stack fitness tracking web application** designed to help users log workouts, track weight progress, and manage profiles securely and efficiently 💪📈
 
 ---
 
 ## 🚀 **Project Overview**
 
-**Strive Web** is built using the **MERN stack** and focuses on providing a clean, user-friendly experience for fitness enthusiasts who want to track their progress over time.
+**Strive App** is built using the **MERN stack** and focuses on providing a clean, user-friendly experience for fitness enthusiasts who want to track their progress over time.
 
 The application supports:
 
 * Secure user authentication
+* Workout & routine tracking
 * Daily weight logging
 * Visual progress tracking using charts
-* Workout & routine tracking
 * Profile management with image uploads
 
 ---
@@ -101,7 +101,7 @@ strive_web/
 
 * Node.js (v18+ recommended)
 * MongoDB (local or Atlas)
-* npm or yarn
+* npm
 
 ### 🔧 **Backend Setup**
 
@@ -124,7 +124,7 @@ NODE_ENV=development
 * Start the server
 
 ```
-npm run dev
+nodemon src/server
 ```
 
 ---
@@ -146,17 +146,6 @@ npm start
 
 ---
 
-## 🔄 **API Highlights**
-
-* `POST /register` – Register a new user
-* `POST /login` – Login user
-* `POST /logout` – Logout user
-* `GET /check-session` – Validate user session
-* `POST /change-password/:userId`
-* `POST /update-user-info/:userId`
-* `PUT /update-profile-pic/:userId`
-
----
 
 ## 📸 **Screenshots**
 
@@ -169,7 +158,6 @@ npm start
 * Mobile-first PWA support 📱
 * Advanced analytics & insights
 * Cloud image storage (S3 / Cloudinary)
-* Social features (sharing progress)
 * Admin dashboard
 
 ---
